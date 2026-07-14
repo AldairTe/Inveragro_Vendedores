@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getClientes, createCliente } = require('../controllers/clienteController');
+const { getClientes, createCliente, actualizarCliente, eliminarCliente } = require('../controllers/clienteController');
 
-// Ruta: GET /api/clientes
 router.get('/', getClientes);
-
-// Ruta: POST /api/clientes
 router.post('/', createCliente);
+router.put('/:id', actualizarCliente);
+router.delete('/:id', eliminarCliente);
 
 module.exports = router;

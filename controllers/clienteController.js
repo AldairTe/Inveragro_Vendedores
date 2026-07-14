@@ -47,7 +47,44 @@ const createCliente = async (req, res) => {
     }
 };
 
-module.exports = {
-    getClientes,
-    createCliente
+// Actualizar Cliente
+const actualizarCliente = async (req, res) => {
+    const { id } = req.params;
+    const { nombre_fundo, nombre_contacto, telefono, latitud, longitud, vendedor_id, estado } = req.body;
+
+    try {
+        const query = `
+            UPDATE clientes 
+            SET nombre_fundo = $1, nombre_contacto = $2, telefono = $3, 
+                latitud = $4, longitud = $5, vendedor_id = $6, estado = $7
+            WHERE id = $8 
+            RETURNING *;
+        `;
+        const values = [nombre_fundo, nombre_contacto, telefono, latitud, longitud, vendedor_id, estado, id];
+        const { rows } = await db.query(query, values);
+        
+        if (rows.length === 0) return res.status(404).json({ error: 'Fundo no encontrado' });
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error al actualizar cliente:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 };
+
+// Eliminar Cliente (Borrado lógico)
+const eliminarCliente = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const query = 'UPDATE clientes SET estado = false WHERE id = $1 RETURNING id, nombre_fundo';
+        const { rows } = await db.query(query, [id]);
+
+        if (rows.length === 0) return res.status(404).json({ error: 'Fundo no encontrado' });
+        res.json({ message: 'Fundo desactivado correctamente', cliente: rows[0] });
+    } catch (error) {
+        console.error('Error al desactivar cliente:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+};
+
+module.exports = { getClientes, createCliente, actualizarCliente, eliminarCliente };
