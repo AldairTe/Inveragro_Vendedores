@@ -48,5 +48,33 @@ const getVendedores = async (req, res) => {
     }
 };
 
-// No olvides exportarla al final del archivo
-module.exports = { loginUsuario, getVendedores };
+// NUEVA FUNCIÓN: Crear un nuevo vendedor (usuario)
+const crearVendedor = async (req, res) => {
+    const { dni, nombre_completo, password_hash } = req.body;
+
+    // Validación básica
+    if (!dni || !nombre_completo || !password_hash) {
+        return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+
+    try {
+        const query = `
+            INSERT INTO usuarios (dni, nombre_completo, password_hash) 
+            VALUES ($1, $2, $3) 
+            RETURNING id, dni, nombre_completo, estado
+        `;
+        const { rows } = await db.query(query, [dni, nombre_completo, password_hash]);
+        
+        res.status(201).json(rows[0]);
+    } catch (error) {
+        console.error('Error al crear vendedor:', error);
+        // 23505 es el código de error en PostgreSQL para "Unique violation" (DNI duplicado)
+        if (error.code === '23505') {
+            return res.status(400).json({ error: 'Este DNI ya está registrado en el sistema' });
+        }
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+
+// Actualiza tus exportaciones al final del archivo
+module.exports = { loginUsuario, getVendedores, crearVendedor };
