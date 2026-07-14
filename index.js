@@ -14,7 +14,7 @@ const clienteRoutes = require('./routes/clienteRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const sincronizacionRoutes = require('./routes/sincronizacionRoutes');
-const licenciaRoutes = require('./routes/licencia');
+const licenciaRoutes = require('./routes/licenciaRoutes');
 
 // --- AQUÍ LAS USAMOS ---
 app.use('/api/clientes', clienteRoutes);
