@@ -76,5 +76,47 @@ const crearVendedor = async (req, res) => {
     }
 };
 
-// Actualiza tus exportaciones al final del archivo
-module.exports = { loginUsuario, getVendedores, crearVendedor };
+// Actualizar Vendedor
+const actualizarVendedor = async (req, res) => {
+    const { id } = req.params;
+    const { dni, nombre_completo, estado } = req.body;
+
+    try {
+        const query = `
+            UPDATE usuarios 
+            SET dni = $1, nombre_completo = $2, estado = $3 
+            WHERE id = $4 
+            RETURNING id, dni, nombre_completo, estado
+        `;
+        const { rows } = await db.query(query, [dni, nombre_completo, estado, id]);
+        
+        if (rows.length === 0) return res.status(404).json({ error: 'Vendedor no encontrado' });
+        res.json(rows[0]);
+    } catch (error) {
+        console.error('Error al actualizar vendedor:', error);
+        if (error.code === '23505') return res.status(400).json({ error: 'El DNI ya está en uso' });
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+};
+
+// Borrado Lógico de Vendedor (Desactivar)
+const eliminarVendedor = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // En lugar de DELETE, hacemos un UPDATE al estado
+        const query = 'UPDATE usuarios SET estado = false WHERE id = $1 RETURNING id, nombre_completo, estado';
+        const { rows } = await db.query(query, [id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Vendedor no encontrado' });
+        }
+
+        res.json({ message: 'Vendedor desactivado correctamente', usuario: rows[0] });
+    } catch (error) {
+        console.error('Error en el borrado lógico del vendedor:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+};
+// Actualiza tus exportaciones:
+module.exports = { loginUsuario, getVendedores, crearVendedor, actualizarVendedor, eliminarVendedor };
