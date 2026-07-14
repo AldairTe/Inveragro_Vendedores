@@ -4,6 +4,6 @@ const { loginUsuario, getVendedores } = require('../controllers/usuarioControlle
 
 // Ruta: POST /api/usuarios/login
 router.post('/login', loginUsuario);
-router.post('/vendedores', getVendedores);
+router.get('/vendedores', getVendedores);
 
 module.exports = router;
