@@ -14,12 +14,14 @@ const clienteRoutes = require('./routes/clienteRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const sincronizacionRoutes = require('./routes/sincronizacionRoutes');
+const licenciaRoutes = require('./routes/licencia');
 
 // --- AQUÍ LAS USAMOS ---
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/sincronizar', sincronizacionRoutes);
+app.use('/api/licencia', licenciaRoutes);
 
 app.get('/', (req, res) => {
     res.send('¡Backend Agro Ventas funcionando al 100%!');
