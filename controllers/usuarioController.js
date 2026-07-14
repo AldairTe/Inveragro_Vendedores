@@ -24,4 +24,29 @@ const loginUsuario = async (req, res) => {
     }
 };
 
-module.exports = { loginUsuario };
+// NUEVA FUNCIÓN: Obtener la lista de todos los vendedores con su conteo de clientes
+const getVendedores = async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                u.id, 
+                u.dni, 
+                u.nombre_completo, 
+                u.estado,
+                COUNT(c.id)::INTEGER AS clientes_asignados
+            FROM usuarios u
+            LEFT JOIN clientes c ON u.id = c.vendedor_id
+            GROUP BY u.id
+            ORDER BY u.nombre_completo ASC
+        `;
+        const { rows } = await db.query(query);
+        
+        res.json(rows);
+    } catch (error) {
+        console.error('Error al obtener vendedores:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+};
+
+// No olvides exportarla al final del archivo
+module.exports = { loginUsuario, getVendedores };
